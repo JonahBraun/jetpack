@@ -3,17 +3,10 @@
  * Untappd Shortcodes
  * @author kraftbj
  *
- * [untappd-menu location="123" menu="1234-1234-1234"]
+ * [untappd-menu location="123" theme="123"]
  * @since  4.1.0
- * @param location        int    Location ID for the Untappd venue. Required.
- * @param menu            string Menu ID for the venue's menu. Required.
- * @param headerbg        string Header background color, hex value. Optional.
- * @param menubg          string Menu backgroung color, hex value. Optional.
- * @param sectionheaderbg string Section Header background color, hex value. Optional.
- * @param footerfontcolor string Footer font color, hex value. Optional.
- * @param linkfontcolor   string Link font color, hex value. Optional.
- * @param fontfamily      string Font family name. Optional.
- * @param fontsize        int    Font size in pixels. Optional.
+ * @param location int Location ID for the Untappd venue. Required.
+ * @param theme    int Theme ID for the Untappd menu. Required.
  */
 
 class Jetpack_Untappd {
@@ -31,29 +24,18 @@ class Jetpack_Untappd {
 	 *
 	 */
 	static function menu_shortcode( $atts, $content = '' ) {
-		// Let's bail if we don't have location or menu.
-		if ( ! isset( $atts['location'] ) || ! isset( $atts['menu'] ) ) {
+		// Let's bail if we don't have location or theme.
+		if ( ! isset( $atts['location'] ) || ! isset( $atts['theme'] ) ) {
 			if ( current_user_can( 'edit_posts') ){
-				return __( 'No location or menu ID provided in the untappd-menu shortcode.', 'jetpack' );
+				return __( 'No location or theme ID provided in the untappd-menu shortcode.', 'jetpack' );
 			}
-			return;
-		}
-
-		if ( ! wp_script_is( 'jquery', 'done' ) ){
 			return;
 		}
 
 		// Let's apply some defaults.
 		$atts = shortcode_atts( array(
-			'location'        => '',
-			'menu'            => '',
-			'headerbg'        => '#FFFFFF',
-			'menubg'          => '#F6F6F6',
-			'sectionheaderbg' => '#282828',
-			'footerfontcolor' => '#4A4A4A',
-			'linkfontcolor'   => '#055CFF',
-			'fontfamily'      => 'Helvetica Neue',
-			'fontsize'        => '14',
+			'location' => '',
+			'theme'    => '',
 		), $atts, 'untappd-menu' );
 
 		// We're going to clean the user input.
@@ -62,19 +44,15 @@ class Jetpack_Untappd {
 		static $untappd_menu = 1;
 
 		$html  = '<div id="menus-container-untappd-' . $untappd_menu . '"></div>';
-		$html .= '<script type="text/javascript">var Zepto = jQuery.noConflict();</script>';
-		$html .= '<script type="text/javascript" src="https://business.untappd.com/locations/' . $atts['location'] . '/add_menu_to_website/js?menu_ids[]=' . $atts['menu'] . '"></script>' . PHP_EOL;
-		$html .= '<script type="text/javascript">var options = {' . PHP_EOL;
-		$html .= '"HeaderBackgroundColor": "'. $atts['headerbg'] .'",' . PHP_EOL;
-		$html .= '"MenuBackgroundColor": "'. $atts['menubg'] .'",' . PHP_EOL;
-		$html .= '"SectionHeaderBackgroundColor": "'. $atts['sectionheaderbg'] .'",' . PHP_EOL;
-		$html .= '"FooterFontColor": "'. $atts['footerfontcolor'] .'",' . PHP_EOL;
-		$html .= '"LinkFontColor": "'. $atts['linkfontcolor'] .'",' . PHP_EOL;
-		$html .= '"FontFamily": "'. $atts['fontfamily'] .'",' . PHP_EOL;
-		$html .= '"BaseFontSize": "'. $atts['fontsize'] .'px"' . PHP_EOL;
-		$html .= '}' . PHP_EOL;
-
-		$html .= 'new MenuView(' . $atts['location'] . ', "menus-container-untappd-' . $untappd_menu . '", options);</script>';
+		$html .= '<script type="text/javascript">' . PHP_EOL;
+		$html .= '!function(e, t) { console.log("getscript: ", e);' . PHP_EOL;
+		$html .= 'var n = document.createElement("script"), o = document.getElementsByTagName("script")[0];' . PHP_EOL;
+		$html .= 'n.async = 1, o.parentNode.insertBefore(n, o), n.onload = n.onreadystatechange = function(e, o) {' . PHP_EOL;
+		$html .= '(o || !n.readyState || /loaded|complete/.test(n.readyState)) && (n.onload = n.onreadystatechange = null, n = void 0, o || t && t())' . PHP_EOL;
+		$html .= '}, n.src = e' . PHP_EOL;
+		$html .= '}("https://business.untappd.com/locations/' . $atts['location'] . '/themes/' . $atts['theme'] . '/js", function() {' . PHP_EOL;
+		$html .= 'EmbedMenu( "menu-container-untappd-' . $untappd_menu . '" )});' . PHP_EOL;
+		$html .= '</script>';
 
 		$untappd_menu++;
 
@@ -90,27 +68,10 @@ class Jetpack_Untappd {
 		if ( ! is_array( $atts ) ){
 			return;
 		}
-		$intkeys    = array( 'location', 'fontsize' );
-		$hexkeys    = array( 'headerbg', 'menubg', 'sectionheaderbg', 'footerfontcolor', 'linkfontcolor' );
 
 		foreach ( $atts as $k => $v ){
-			if ( 'menu' == $k ){
-				$atts[ $k ] = esc_attr( $v );
-				break;
-			}
-			if ( 'fontfamily' == $k ){
-				$atts['k'] = esc_js( $v );
-				break;
-			}
-			if ( in_array( $k, $intkeys) ){
-				$atts['k'] = intval( $v );
-				break;
-			}
-			if ( in_array( $k, $hexkeys) ){
-				$atts[ $k ] = santize_hex_color( $v );
-				break;
-			}
-		} // end foreach
+			$atts['k'] = intval( $v );
+		}
 
 		return $atts;
 	}
