@@ -1685,3 +1685,59 @@ class Share_Skype extends Sharing_Source {
 		endif;
 	}
 }
+
+/**
+ *
+ * This proof of concept demonstrates use of footer linked SVG icons.
+ *
+ * @todo This is a PoC only and requires cleanup!
+ * @todo Does not support admin preview
+ */
+class Share_Telegram extends Sharing_Source {
+	public $shortname = 'telegram';
+	public $genericon = '\f224';
+
+	public function __construct( $id, array $settings ) {
+		parent::__construct( $id, $settings );
+	}
+
+	public function get_name() {
+		return __( 'Telegram', 'jetpack' );
+	}
+
+	public function process_request( $post, array $post_data ) {
+		// Record stats
+		parent::process_request( $post, $post_data );
+
+		$telegram_url = esc_url_raw( 'https://telegram.me/share/url?url=' . rawurlencode( $this->get_share_url( $post->ID ) ) . '&text=' . rawurlencode( $this->get_share_title( $post->ID ) ) );
+		wp_redirect( $telegram_url );
+		exit;
+	}
+
+	public function get_display( $post ) {
+		//return $this->get_link( $this->get_process_request_url( $post->ID ), _x( 'Telegram', 'share to', 'jetpack' ), __( 'Click to share on Telegram', 'jetpack' ), 'share=telegram' );
+		return <<<'EOD'
+<a rel="nofollow" data-shared="sharing-telegram-16" class="share-telegram sd-button share-icon" href="" target="_blank" title="Click to share on telegram"><span>
+	<svg><use xlink:href="#telegram"/></svg>
+	Telegram
+</span></a>
+EOD;
+	}
+
+	function display_footer() {
+		$this->js_dialog( $this->shortname, array( 'width' => 450, 'height' => 450 ) );
+?>
+<svg version=1.1>
+	<symbol id=telegram viewBox="0 0 16 16">
+	<g fill-rule="evenodd">
+		<path d="m 16,8 c 0,4.41828 -3.581723,8 -7.9999996,8 C 3.581722,16 0,12.41828 0,8 0,3.58172 3.581722,0 8.0000004,0 12.418277,0 16,3.58172 16,8 Z
+		M 9.7666214,9.82753 C 10.012744,9.15486 10.913951,6.5967 11.058646,5.92577 11.222247,5.16718 10.879762,5.09312 10.100813,5.34755 9.3218644,5.60198 7.3241954,6.3424 6.9879684,6.46174 6.6517404,6.58109 5.0148385,7.13124 4.6754665,7.2954 3.9822941,7.6672 4.3194944,8.23461 5.0944015,8.52923 c 2.3161089,1.11174 1.6584529,0.54521 2.6924759,2.60234 0.212799,0.52552 0.714565,1.42065 1.195136,0.74402 0.252635,-0.38484 0.591058,-1.51908 0.784608,-2.04806 z" />
+	</g>
+	</symbol>
+	<symbol id=telegram-alt viewBox="0 0 16 16">
+		<path d="m 12.865697,10.689248 c 0.579152,-1.5591304 2.699781,-7.4885004 3.040264,-9.0436004 0.38497,-1.75829001 -0.420933,-1.92994001 -2.253878,-1.34021001 -1.832943,0.58973 -6.5336585,2.30589001 -7.3248355,2.58251001 -0.791177,0.27661 -4.642971,1.55178 -5.441547,1.93226 -1.631104,0.86178 -0.837638,2.17693 0.985796,2.85981 5.450035,2.5768304 3.902504,1.26372 6.335664,6.0317804 0.500739,1.21805 1.681444,3.29281 2.8122755,1.7245 0.594476,-0.89198 1.390818,-3.52096 1.846261,-4.74705 z" />
+	</symbol>
+</svg>
+<?php
+	}
+}

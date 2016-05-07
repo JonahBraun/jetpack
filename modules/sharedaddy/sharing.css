@@ -219,6 +219,13 @@ body .sd-content ul li.share-custom.no-icon a span {
 .sd-social-icon-text .sd-content li.share-linkedin a:before {
 	content: '\f207';
 }
+.share-telegram svg{
+	fill: currentColor;
+	display: inline-block;
+	vertical-align: text-top;
+	width: 16px;
+	height: 16px;
+}
 .sd-social-icon .sd-content ul li.share-twitter a:before,
 .sd-social-text .sd-content ul li.share-twitter a:before,
 .sd-content ul li.share-twitter div.option.option-smart-off a:before,

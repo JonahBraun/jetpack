@@ -122,6 +122,8 @@ li.service.share-email span:before {
 li.service.share-linkedin span:before {
 	content: '\f207';
 }
+li.service.share-telegram span:before {
+}
 li.service.share-twitter span:before {
 	content: '\f202';
 }
@@ -298,6 +300,9 @@ body.settings_page_sharing .advanced input[type=submit] {
 	background-size: 85px 20px;
 	width:85px;
 	height:20px;
+}
+
+.preview-telegram .option-smart-on {
 }
 
 .preview-twitter .option-smart-on {
